@@ -1,6 +1,4 @@
-# Красно-черное дерево (наследуется от BST класса Node)
 from BST import Node
-
 
 class RBNode(Node):
     RED = 'RED'
@@ -34,6 +32,13 @@ class RBNode(Node):
 
         return left_height + (1 if self.color == RBNode.BLACK else 0)
 
+    def get_root(self):
+        """Возвращает корень дерева"""
+        current = self
+        while current.parent is not None:
+            current = current.parent
+        return current
+
     def insert(self, key):
         """Вставка нового значения с балансировкой красно-черного дерева"""
         if key < self.key:
@@ -42,7 +47,7 @@ class RBNode(Node):
                 self.left_child.parent = self
                 self.left_child.balance_after_insert()
                 # Находим и возвращаем корень
-                root = self.left_child
+                root = self
                 while root.parent is not None:
                     root = root.parent
                 return root
@@ -54,7 +59,7 @@ class RBNode(Node):
                 self.right_child.parent = self
                 self.right_child.balance_after_insert()
                 # Находим и возвращаем корень
-                root = self.right_child
+                root = self
                 while root.parent is not None:
                     root = root.parent
                 return root
@@ -78,35 +83,52 @@ class RBNode(Node):
             if parent == grandparent.left_child:
                 uncle = grandparent.right_child
                 if uncle is not None and uncle.color == RBNode.RED:
+                    # Случай 1: Дядя красный
                     parent.color = RBNode.BLACK
                     uncle.color = RBNode.BLACK
                     grandparent.color = RBNode.RED
-                    node = grandparent
+                    node = grandparent  # Переходим к дедушке
                 else:
+                    # Случай 2: Дядя черный
                     if node == parent.right_child:
+                        # Случай 2a: Треугольник
                         node = parent
                         node.left_rotate()
+                        # После поворота обновляем parent
+                        parent = node.parent
+                        grandparent = parent.parent if parent else None
 
+                    # Случай 2b/3: Линия
                     parent.color = RBNode.BLACK
-                    grandparent.color = RBNode.RED
-                    grandparent.right_rotate()
+                    if grandparent:
+                        grandparent.color = RBNode.RED
+                        grandparent.right_rotate()
             else:
                 uncle = grandparent.left_child
                 if uncle is not None and uncle.color == RBNode.RED:
+                    # Случай 1: Дядя красный
                     parent.color = RBNode.BLACK
                     uncle.color = RBNode.BLACK
                     grandparent.color = RBNode.RED
                     node = grandparent
                 else:
+                    # Случай 2: Дядя черный
                     if node == parent.left_child:
+                        # Случай 2a: Треугольник
                         node = parent
                         node.right_rotate()
+                        # После поворота обновляем parent
+                        parent = node.parent
+                        grandparent = parent.parent if parent else None
 
+                    # Случай 2b/3: Линия
                     parent.color = RBNode.BLACK
-                    grandparent.color = RBNode.RED
-                    grandparent.left_rotate()
+                    if grandparent:
+                        grandparent.color = RBNode.RED
+                        grandparent.left_rotate()
 
-        root = self
+        # Обеспечиваем, что корень всегда черный
+        root = node
         while root.parent is not None:
             root = root.parent
         root.color = RBNode.BLACK
