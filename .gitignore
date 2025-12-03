@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+env.bak/
+venv.bak/
+
+# PyCharm
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Virtual Environment
+.env
+.venv
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
